@@ -1,0 +1,68 @@
+CREATE DATABASE college;
+
+USE college;
+
+CREATE TABLE Dept (
+    dept_id INT PRIMARY KEY AUTO_INCREMENT,
+    dept_name VARCHAR(50) NOT NULL,
+    location VARCHAR(50)
+);
+
+CREATE TABLE Emp (
+    emp_id INT PRIMARY KEY AUTO_INCREMENT,
+    emp_name VARCHAR(50) NOT NULL,
+    emp_salary DECIMAL(10, 2),
+    emp_position VARCHAR(50),
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES Dept(dept_id) ON DELETE SET NULL
+);
+
+INSERT INTO Dept (dept_id, dept_name, location) VALUES (101, 'Human Resources', 'Mumbai');
+
+INSERT INTO Dept (dept_name, location) VALUES
+('Finance', 'Delhi'),
+('IT', 'Bengaluru'),
+('Marketing', 'Hyderabad'),
+('Sales', 'Pune');
+
+
+INSERT INTO Emp (emp_id, emp_name, emp_salary, emp_position, dept_id) VALUES 
+(101, 'Amit Sharma', 60000, 'Manager', 101);
+
+INSERT INTO Emp (emp_name, emp_salary, emp_position, dept_id) VALUES 
+('Rajesh Kumar', 45000, 'Assistant', 101),
+('Sneha Gupta', 70000, 'Senior Developer', 102),
+('Priya Singh', 50000, 'Marketing Executive', 102),
+('Anil Mehta', 40000, 'Sales Executive', 103),
+('Deepak Verma', 62000, 'Operations Manager', 103),
+('Kiran Desai', 52000, 'Customer Support Lead', 104),
+('Vikas Patel', 48000, 'Legal Advisor', 104),
+('Meena Joshi', 75000, 'Research Scientist', 105),
+('Rahul Nair', 55000, 'Admin Officer', 105);
+
+
+CREATE VIEW HighSalaryEmp AS
+SELECT emp_id, emp_name, emp_salary
+FROM Emp
+WHERE emp_salary > 50000;
+
+CREATE VIEW EmpDept AS
+SELECT e.emp_id, e.emp_name, e.emp_salary, e.emp_position, d.dept_name
+FROM Emp e
+JOIN Dept d ON e.dept_id = d.dept_id;
+
+INSERT INTO Dept (dept_id, dept_name, location) VALUES (104, 'Customer Support', 'Chennai');
+
+UPDATE EmpDept
+SET emp_salary = 78000
+WHERE emp_name = 'Riya Joshi';
+
+DELETE FROM Emp
+WHERE emp_name = 'Riya Joshi';
+
+INSERT INTO Emp (emp_name, emp_salary, emp_position, dept_id) VALUES ('Riya Joshi', 74000, 'Manager', 104);
+
+CREATE INDEX EmployeeId ON Emp (dept_id ASC, emp_id ASC);
+
+ALTER TABLE Emp DROP FOREIGN KEY Emp_ibfk_1;
+DROP INDEX EmployeeId ON Emp;

@@ -1,0 +1,68 @@
+CREATE DATABASE Students;
+
+USE Students;
+
+CREATE TABLE Stud_Marks( 
+    Roll INT PRIMARY KEY, 
+    Name VARCHAR(50), 
+    total_marks INT
+); 
+
+INSERT INTO Stud_Marks VALUES 
+(1, 'Dhanush', 1100), 
+(2, 'Dheeraj', 980), 
+(3, 'Aniket', 850),
+(4, 'Nitin', 1290), 
+(5, 'Pushkar', 830), 
+(6, 'Suyash', 910), 
+(7, 'Riya', 750), 
+(8, 'Pranaya', 456),
+(9, 'Omkar', 1052), 
+(10, 'Sayli', 950);
+
+CREATE TABLE Result( 
+    Roll INT PRIMARY KEY, 
+    Name VARCHAR(50), 
+    Class VARCHAR(50), 
+    FOREIGN KEY(Roll) REFERENCES Stud_Marks(Roll)
+); 
+
+DELIMITER //
+
+CREATE PROCEDURE proc_Grade(IN r INT, IN n VARCHAR(50)) 
+BEGIN 
+    DECLARE tm INT; 
+    SELECT total_marks INTO tm FROM Stud_Marks WHERE Roll = r AND Name = n; 
+    
+    IF tm <= 1500 AND tm >= 990 THEN 
+        INSERT INTO Result VALUES (r, n, 'Distinction'); 
+    END IF; 
+    
+    IF tm <= 989 AND tm >= 900 THEN 
+        INSERT INTO Result VALUES (r, n, 'First Class'); 
+    END IF; 
+    
+    IF tm <= 899 AND tm >= 825 THEN 
+        INSERT INTO Result VALUES (r, n, 'Second Class'); 
+    END IF; 
+    
+    IF tm <= 824 THEN 
+        INSERT INTO Result VALUES (r, n, 'Fail'); 
+    END IF; 
+END//
+
+DELIMITER ;
+
+ CALL proc_Grade(1, 'Dhanush');
+ CALL proc_Grade(2, 'Dheeraj');
+ CALL proc_Grade(3, 'Aniket');
+ CALL proc_Grade(4, 'Nitin');
+ CALL proc_Grade(5, 'Pushkar');
+ CALL proc_Grade(6, 'Suyash');
+ CALL proc_Grade(7, 'Riya');
+ CALL proc_Grade(8, 'Pranaya');
+ CALL proc_Grade(9, 'Omkar');
+ CALL proc_Grade(10, 'Sayli');
+
+
+SELECT * FROM Result;

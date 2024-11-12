@@ -1,0 +1,77 @@
+CREATE DATABASE BANK;
+
+USE BANK;
+
+CREATE TABLE Branch (
+    bname VARCHAR(100) PRIMARY KEY,
+    city VARCHAR(100)
+);
+
+CREATE TABLE Customers (
+    cname VARCHAR(100) PRIMARY KEY,
+    city VARCHAR(100)
+);
+
+
+CREATE TABLE Deposit (
+    actno INT PRIMARY KEY AUTO_INCREMENT,
+    cname VARCHAR(100),
+    bname VARCHAR(100),
+    amount DECIMAL(10, 2),
+    adate DATE,
+    FOREIGN KEY (bname) REFERENCES Branch(bname),
+    FOREIGN KEY (cname) REFERENCES Customers(cname)
+);
+
+CREATE TABLE Borrow (
+    loanno INT PRIMARY KEY AUTO_INCREMENT,
+    cname VARCHAR(100),
+    bname VARCHAR(100),
+    amount DECIMAL(10, 2),
+    FOREIGN KEY (bname) REFERENCES Branch(bname),
+    FOREIGN KEY (cname) REFERENCES Customers(cname)
+);
+
+INSERT INTO Branch (bname, city) VALUES
+('A', 'Pune'),
+('B', 'Delhi'),
+('C', 'Mumbai');
+
+INSERT INTO Customers (cname, city) VALUES
+('Anil', 'Pune'),
+('Ravi', 'Mumbai'),
+('Simran', 'Delhi'),
+('Raj', 'Mumbai'),
+('Suresh', 'Pune');
+
+INSERT INTO Deposit (cname, bname, amount, adate) VALUES
+('Anil', 'A', 5000.00, '2024-01-01'),
+('Ravi', 'C', 2000.00, '2024-02-01'),
+('Simran', 'B', 1500.00, '2024-03-01'),
+('Raj', 'C', 2500.00, '2024-02-01'),
+('Suresh', 'A', 3500.00, '2024-03-01');
+
+
+INSERT INTO Borrow (cname, bname, amount) VALUES
+('Anil', 'A', 10000.00),
+('Ravi', 'B', 5000.00),
+('Simran', 'C', 7000.00);
+
+
+SELECT bname FROM Branch WHERE city = 'Mumbai';
+
+SELECT actno, amount FROM Deposit;
+
+UPDATE Customers SET city = 'Mumbai' WHERE cname = 'Anil';
+
+SELECT COUNT(DISTINCT cname) AS number_of_depositors FROM Deposit;
+
+SELECT MIN(amount) AS min_amount, MAX(amount) AS max_amount FROM Deposit;
+
+CREATE INDEX deposit_amount ON Deposit(amount);
+
+CREATE VIEW Borrow_View AS
+SELECT loanno, cname, bname, amount
+FROM Borrow;
+
+SELECT * FROM Borrow_View;

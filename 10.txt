@@ -1,0 +1,95 @@
+CREATE DATABASE propertydealer;
+
+USE propertydealer;
+
+CREATE TABLE Branch (
+    branchno INT NOT NULL AUTO_INCREMENT,
+    street VARCHAR(50),
+    city VARCHAR(50) NOT NULL,
+    postcode VARCHAR(50),
+    PRIMARY KEY(branchno),
+    UNIQUE(postcode)
+);
+
+CREATE TABLE Staff (
+    staffno INT NOT NULL AUTO_INCREMENT,
+    fname VARCHAR(50) NOT NULL,
+    lname VARCHAR(50),
+    position VARCHAR(50) NOT NULL,
+    sex VARCHAR(10),
+    dob DATE,
+    salary INT,
+    branchno INT NOT NULL,
+    FOREIGN KEY(branchno) REFERENCES Branch(branchno),
+    PRIMARY KEY(staffno)
+);
+
+CREATE TABLE PropertyforRent (
+    propertyno INT NOT NULL AUTO_INCREMENT,
+    street VARCHAR(50),
+    city VARCHAR(50) NOT NULL,
+    postcode VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    rooms VARCHAR(10),
+    rent INT,
+    ownerno INT NOT NULL,
+    staffno INT NOT NULL,
+    branchno INT NOT NULL,
+    FOREIGN KEY(branchno) REFERENCES Branch(branchno),
+    FOREIGN KEY(staffno) REFERENCES Staff(staffno),
+    PRIMARY KEY(propertyno)
+);
+
+INSERT INTO Branch (branchno, street, city, postcode) VALUES (101, 'Narhe', 'Pune', '410041');
+
+INSERT INTO Branch (street, city, postcode) VALUES 
+    ('Main St', 'Mumbai', '400001'),
+    ('Market Rd', 'Pune', '411041'),
+    ('High St', 'Nashik', '422001');
+
+
+INSERT INTO Staff (staffno, fname, lname, position, sex, dob, salary, branchno) VALUES (101, 'Jaya', 'Deshmukh', 'Manager', 'F', '1991-01-01', 60000, 102);
+
+INSERT INTO Staff (fname, lname, position, sex, dob, salary, branchno) VALUES 
+    ('Raj', 'Patil', 'Manager', 'M', '1985-08-10', 75000, 101),
+    ('Neha', 'Joshi', 'Assistant', 'F', '1990-04-20', 50000, 102),
+    ('Amit', 'Kumar', 'Clerk', 'M', '1988-03-15', 30000, 101),
+    ('Akash', 'Rao', 'Clerk', 'M', '1988-03-15', 45000, 103),
+    ('Ajay', 'Patil', 'Salesman', 'M', '1988-03-15', 60000, 104);
+
+INSERT INTO PropertyforRent (propertyno, street, city, postcode, type, rooms, rent, ownerno, staffno, branchno) VALUES (1001, 'Aundh', 'Pune', '411007', 'Apartment', '3 BHK', 1200, 101, 101, 101);
+
+INSERT INTO PropertyforRent (street, city, postcode, type, rooms, rent, ownerno, staffno, branchno) VALUES 
+    ('SB Road', 'Pune', '411041', 'Apartment', '3 BHK', 18000, 107, 102, 101),
+    ('Sinhgad Road', 'Pune', '411041', 'Villa', '4 BHK', 32000, 108, 103, 102),
+    ('Chakan', 'Pune', '411041', 'Flat', '2 BHK', 15000, 109, 102, 102),
+    ('Marine Drive', 'Mumbai', '400001', 'Apartment', '2 BHK', 15000, 104, 101, 101),
+    ('Bandra', 'Mumbai', '400001', 'Studio', '1 BHK', 10000, 105, 102, 101), 
+    ('Thane', 'Mumbai', '400001', 'Penthouse', '4 BHK', 50000, 106, 101, 101),
+    ('Vine Rd', 'Nashik', '422001', 'House', '3 BHK', 22000, 110, 101, 101), 
+    ('Ganesh Mandir', 'Nashik', '422001', 'Cottage', '2 BHK', 14000, 111, 102, 101),
+    ('Bus Stand', 'Nashik', '422001', 'Flat', '1 BHK', 9000, 112, 103, 101);
+
+UPDATE Branch
+SET street = 'MG'
+WHERE branchno = 1001;
+
+SELECT fname, lname
+FROM Staff
+WHERE salary > (SELECT AVG(salary) FROM Staff);
+
+SELECT type, rooms
+FROM PropertyforRent
+WHERE city = 'Pune';
+
+SELECT fname, lname
+FROM Staff
+WHERE position IN ('Salesman', 'Saleswoman');
+
+SELECT fname, lname, dob
+FROM Staff
+WHERE dob < '2004-01-01';
+
+SELECT branchno, COUNT(staffno) AS staff_count
+FROM Staff
+GROUP BY branchno;

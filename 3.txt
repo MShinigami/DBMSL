@@ -1,0 +1,47 @@
+use STUD
+
+db.createCollection("student")
+
+db.student.insertMany([
+    { "Rollno": 1, "Name": "Aarav", "Class": "TE", "Div": "A", "Subject": { "TOC": 75, "DBMS": 65, "CNS": 80, "SPOS": 70 }, "Address": { "City": "Pune" } },
+    { "Rollno": 2, "Name": "Isha", "Class": "TE", "Div": "B", "Subject": { "TOC": 85, "DBMS": 55, "CNS": 78, "SPOS": 60 }, "Address": { "City": "Mumbai" } },
+    { "Rollno": 3, "Name": "Nikhil", "Class": "TE", "Div": "A", "Subject": { "TOC": 70, "DBMS": 60, "CNS": 82, "SPOS": 75 }, "Address": { "City": "Pune" } },
+    { "Rollno": 4, "Name": "Sara", "Class": "TE", "Div": "B", "Subject": { "TOC": 68, "DBMS": 50, "CNS": 75, "SPOS": 65 }, "Address": { "City": "Bangalore" } },
+    { "Rollno": 5, "Name": "Ravi", "Class": "TE", "Div": "B", "Subject": { "TOC": 80, "DBMS": 85, "CNS": 88, "SPOS": 82 }, "Address": { "City": "Pune" } },
+    { "Rollno": 6, "Name": "Megha", "Class": "TE", "Div": "A", "Subject": { "TOC": 90, "DBMS": 65, "CNS": 77, "SPOS": 68 }, "Address": { "City": "Mumbai" } }
+])
+
+db.student.aggregate([
+    { $group: { _id: null, avgTOC: { $avg: "$Subject.TOC" } } }
+])
+
+db.student.aggregate([
+    { $group: { _id: "$Div", count: { $sum: 1 } } }
+])
+
+db.student.aggregate([
+    { $match: { "Div": "B" } },
+    { $group: { _id: null, minDBMS: { $min: "$Subject.DBMS" } } },
+    { $lookup: { from: "student", localField: "minDBMS", foreignField: "Subject.DBMS", as: "students" } },
+    { $unwind: "$students" },
+    { $match: { "students.Div": "B" } },
+    { $project: { _id: 0, student: "$students.Name", minDBMS: 1 } }
+])
+
+db.student.aggregate([
+    { $match: { "Address.City": "Pune" } },
+    { $group: { _id: null, totalSPOS: { $sum: "$Subject.SPOS" } } }
+])
+
+db.student.aggregate([
+    { $match: { "Subject.DBMS": { $gt: 60 } } },
+    { $group: { _id: "$Div", count: { $sum: 1 } } }
+])
+
+db.student.aggregate([
+    { $group: { _id: "$Address.City", count: { $sum: 1 } } }
+])
+
+db.student.createIndex({ "Name": 1 })
+
+db.student.createIndex({ "Class": 1, "Div": 1 })

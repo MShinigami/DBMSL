@@ -1,0 +1,25 @@
+use City_map_reduce
+
+db.City.insertMany([
+    { cityname: "Mumbai", area: 603, population: 2269183 },
+    { cityname: "Delhi", area: 1484, population: 30927984 },
+    { cityname: "Bangalore", area: 709, population: 2844367 },
+    { cityname: "Hyderabad", area: 625, population: 6809977 },
+    { cityname: "Ahmedabad", area: 464, population: 5577914 },
+    { cityname: "Pune", area: 331, population: 1312445 },
+    { cityname: "Surat", area: 326.5, population: 466779 },
+    { cityname: "Jaipur", area: 485, population: 347335 }
+])
+
+var Cities_P = function() {
+    var category;
+    if (this.population > 1000000) { category = "HIGHLY POPULATED"; }
+    else { category = "LOW POPULATED"; }
+    emit(category, this.cityname);
+};
+
+var total = function(key, values) { return values; };
+
+db.City.mapReduce(Cities_P, total, { out: "Cities_Population" });
+
+db.Cities_Population.find()

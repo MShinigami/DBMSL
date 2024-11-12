@@ -1,0 +1,90 @@
+CREATE DATABASE COLLEGE;
+
+USE COLLEGE;
+
+CREATE TABLE Employee (
+    EmpID INT PRIMARY KEY,
+    Ename VARCHAR(50),
+    Salary DECIMAL(10, 2),
+    Contactno VARCHAR(15),
+    City VARCHAR(50),
+    DeptID INT
+);
+
+CREATE TABLE Department (
+    DeptID INT PRIMARY KEY,
+    Dname VARCHAR(50),
+    Location VARCHAR(50)
+);
+
+INSERT INTO Department (DeptID, Dname, Location)
+VALUES 
+(1, 'HR', 'New Delhi'),
+(2, 'Finance', 'Mumbai'),
+(3, 'Engineering', 'Bengaluru'),
+(4, 'Marketing', 'Chennai'),
+(5, 'Sales', 'Hyderabad'),
+(6, 'IT', 'Pune');
+
+INSERT INTO Employee (EmpID, Ename, Salary, Contactno, City, DeptID)
+VALUES 
+(101, 'Ravi Kumar', 50000, '9876543210', 'New Delhi', 1),
+(102, 'Priya Sharma', 60000, '9876541234', 'Mumbai', 2),
+(103, 'Amit Patel', 70000, '9123456789', 'Bengaluru', 3),
+(104, 'Neha Gupta', 55000, '9234567890', 'Chennai', 4),
+(105, 'Rahul Verma', 65000, '9345678901', 'Hyderabad', 5),
+(106, 'Sita Rani', 80000, '9456789012', 'Pune', 6);
+
+SELECT E.Ename, D.Dname
+FROM Employee E
+INNER JOIN Department D ON E.DeptID = D.DeptID;
+
+SELECT E.Ename, D.Dname, D.Location
+FROM Employee E
+INNER JOIN Department D ON E.DeptID = D.DeptID;
+
+SELECT E.Ename, D.Location, D.Dname
+FROM Employee E
+NATURAL JOIN Department D;
+
+SELECT D.Dname, E.Salary, D.Location, E.Dname AS EmpDept
+FROM Employee E
+RIGHT JOIN Department D ON E.DeptID = D.DeptID;
+
+(SELECT E.Ename, D.Dname, D.Location
+ FROM Employee E
+ LEFT JOIN Department D ON E.DeptID = D.DeptID)
+
+UNION
+
+(SELECT E.Ename, D.Dname, D.Location
+ FROM Employee E
+ RIGHT JOIN Department D ON E.DeptID = D.DeptID);
+
+
+SELECT E.Ename, D.Dname
+FROM Employee E
+CROSS JOIN Department D;
+
+SELECT E1.Ename AS Employee1, E2.Ename AS Employee2, D.Dname
+FROM Employee E1
+JOIN Employee E2 ON E1.DeptID = E2.DeptID
+JOIN Department D ON E1.DeptID = D.DeptID
+WHERE E1.EmpID != E2.EmpID;
+
+CREATE VIEW EmployeeDeptView AS
+SELECT E.Ename, D.Dname
+FROM Employee E
+INNER JOIN Department D ON E.DeptID = D.DeptID;
+
+CREATE VIEW DeptSalaryView AS
+SELECT D.Dname, D.Location, SUM(E.Salary) AS TotalSalary
+FROM Department D
+JOIN Employee E ON D.DeptID = E.DeptID
+GROUP BY D.Dname, D.Location;
+
+UPDATE Employee
+SET Salary = 5000
+WHERE Ename = 'John Doe';
+
+DROP VIEW EmployeeDeptView;

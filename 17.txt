@@ -1,0 +1,71 @@
+CREATE DATABASE Library;
+
+USE Library;
+
+CREATE TABLE Borrower (
+    Rollno INT PRIMARY KEY,
+    Name VARCHAR(50),
+    DateOfIssue DATE,
+    NameOfBook VARCHAR(50),
+    Status VARCHAR(1)
+);
+
+CREATE TABLE Fine (
+    Rollno INT,
+    Date DATE,
+    Amt INT,
+    FOREIGN KEY (Rollno) REFERENCES Borrower(Rollno)
+);
+
+INSERT INTO Borrower (Rollno, Name, DateOfIssue, NameOfBook, Status) VALUES
+    (101, 'Amit Sharma', STR_TO_DATE('2024-10-01', '%Y-%m-%d'), 'Database Management', 'I'),
+    (102, 'Priya Patel', STR_TO_DATE('2024-09-15', '%Y-%m-%d'), 'Data Structures', 'I'),
+    (103, 'Rajesh Kumar', STR_TO_DATE('2024-08-25', '%Y-%m-%d'), 'Operating Systems', 'I'),
+    (104, 'Sneha Reddy', STR_TO_DATE('2024-09-10', '%Y-%m-%d'), 'Computer Networks', 'I'),
+    (105, 'Vijay Singh', STR_TO_DATE('2024-09-05', '%Y-%m-%d'), 'Artificial Intelligence', 'I');
+
+INSERT INTO Fine (Rollno, Date, Amt) VALUES
+    (101, CURDATE(), 0),
+    (102, CURDATE(), 0),
+    (103, CURDATE(), 0),
+    (104, CURDATE(), 0),
+    (105, CURDATE(), 0);
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE calc_Fine(IN r INT, IN b VARCHAR(30))
+BEGIN
+    DECLARE doi DATE;
+    DECLARE diff INT;
+
+    SELECT DateOfIssue INTO doi FROM Borrower WHERE Rollno = r AND NameOfBook = b;
+    SELECT DATEDIFF(CURDATE(), doi) INTO diff;
+
+    IF diff >= 15 AND diff <= 30 THEN
+        INSERT INTO Fine VALUES (r, CURDATE(), diff * 5);
+    END IF;
+
+    IF diff > 30 THEN
+        INSERT INTO Fine VALUES (r, CURDATE(), diff * 50); 
+    END IF;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE submit(IN r INT)
+BEGIN
+    UPDATE Borrower SET Status = 'R' WHERE Rollno = r;
+    DELETE FROM Fine WHERE Rollno = r;
+END //
+
+DELIMITER ;
+
+CALL calc_Fine(101, 'Database Management');
+
+CALL submit(101);

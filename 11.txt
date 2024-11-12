@@ -1,0 +1,81 @@
+CREATE DATABASE company;
+USE company;
+
+CREATE TABLE emp (
+    eno INT PRIMARY KEY,
+    ename VARCHAR(50),
+    job VARCHAR(50),
+    hiredate DATE,
+    salary DECIMAL(10, 2),
+    commission DECIMAL(10, 2),
+    deptno INT
+);
+
+CREATE TABLE dept (
+    deptno INT PRIMARY KEY,
+    deptname VARCHAR(50),
+    location VARCHAR(50)
+);
+
+INSERT INTO dept (deptno, deptname, location) VALUES
+(10, 'Accounting', 'Mumbai'),
+(20, 'Sales', 'Bangalore'),
+(30, 'HR', 'Chennai'),
+(40, 'Development', 'Hyderabad');
+
+INSERT INTO emp (eno, ename, job, hiredate, salary, commission, deptno) VALUES
+(101, 'Rajesh Kumar', 'salesman', '1981-06-23', 2500.00, 300.00, 20),
+(102, 'Priya Sharma', 'manager', '1980-08-14', 3500.00, NULL, 10),
+(103, 'Amit Patel', 'developer', '1983-03-17', 4000.00, NULL, 40),
+(104, 'Sunita Reddy', 'salesman', '1982-01-21', 2200.00, 250.00, 20),
+(105, 'Ravi Gupta', 'clerk', '1985-12-04', 1500.00, NULL, 30),
+(106, 'Nisha Verma', 'salesman', '1986-11-28', 2800.00, 350.00, 20),
+(107, 'Suresh Iyer', 'developer', '1987-09-09', 3200.00, NULL, 40),
+(108, 'Meera Joshi', 'manager', '1980-06-30', 3800.00, NULL, 10),
+(109, 'Anil Kumar', 'analyst', '1984-05-22', 2800.00, NULL, 40),
+(110, 'Geeta Singh', 'salesman', '1982-04-02', 2300.00, 200.00, 20);
+
+
+
+SELECT MAX(salary) AS max_salary
+FROM emp
+WHERE job = 'salesman';
+
+SELECT ename
+FROM emp
+WHERE ename LIKE 'I%';
+
+SELECT *
+FROM emp
+WHERE hiredate < '1981-09-30';
+
+SELECT *
+FROM emp
+ORDER BY salary DESC;
+
+SELECT COUNT(*) AS num_employees, AVG(salary) AS avg_salary
+FROM emp
+WHERE deptno = 20;
+
+SELECT hiredate, AVG(salary) AS avg_salary, MIN(salary) AS min_salary
+FROM emp
+WHERE deptno = 10
+GROUP BY hiredate;
+
+SELECT e.ename, d.deptname
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno;
+
+SELECT d.deptname, SUM(e.salary) AS total_salary
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+GROUP BY d.deptname;
+
+SELECT e.*
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+WHERE d.deptname = 'Development';
+
+UPDATE emp
+SET salary = salary * 1.05
+WHERE deptno = 10;

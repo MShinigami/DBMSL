@@ -1,0 +1,86 @@
+CREATE DATABASE COMPANY;
+
+USE COMPANY;
+
+CREATE TABLE Sales_Representative (
+    Rep_no INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100),
+    Rep_office VARCHAR(100),
+    Quota DECIMAL(10, 2),
+    sales DECIMAL(10, 2)
+);
+
+CREATE TABLE Customers (
+    Cust_No INT PRIMARY KEY AUTO_INCREMENT,
+    Company VARCHAR(100),
+    Cust_Rep INT,
+    Credit_Limit DECIMAL(10, 2),
+    FOREIGN KEY (Cust_Rep) REFERENCES Sales_Representative(Rep_no)
+);
+
+CREATE TABLE Orders (
+    Order_no INT PRIMARY KEY AUTO_INCREMENT,
+    cust INT,
+    product VARCHAR(100),
+    Quantity INT,
+    amount DECIMAL(10, 2),
+    Disc DECIMAL(5, 2),
+    FOREIGN KEY (cust) REFERENCES Customers(Cust_No)
+);
+
+INSERT INTO Sales_Representative  VALUES (1, 'Arjun Kumar', 'Mumbai', 50000, 25000);
+
+INSERT INTO Sales_Representative (Name, Rep_office, Quota, sales) VALUES
+('Priya Sharma', 'Delhi', 60000, 35000),
+('Rajesh Patel', 'Mumbai', 70000, 45000),
+('Neha Gupta', 'Bangalore', 80000, 55000),
+('Suresh Rao', 'Bangalore', 90000, 70000),
+('Anita Desai', 'Delhi', 40000, 20000);
+
+INSERT INTO Customers VALUES (1, 'TCS', 1, 100000);
+
+INSERT INTO Customers (Company, Cust_Rep, Credit_Limit) VALUES
+('Infosys', 2, 120000),
+('Wipro', 3, 110000),
+('Accenture', 4, 95000),
+('IBM India', 5, 85000),
+('Capgemini', 6, 105000);
+
+INSERT INTO Orders  VALUES  (1001, 1, 'Laptop', 10, 30000, 500);
+
+INSERT INTO Orders (Order_no, cust, product, Quantity, amount, Disc) VALUES
+(2, 1, 'Desktop', 5, 25000, 1000),
+(3, 2, 'Monitor', 20, 40000, 2000),
+(4, 3, 'Tablet', 15, 45000, 3000),
+(5, 4, 'Software', 30, 90000, 5000),
+(6, 5, 'Printer', 10, 15000, 800);
+
+SELECT c.Company AS Customer_Name, c.Credit_Limit, sr.Name AS Rep_Name, sr.sales AS Rep_Sales
+FROM Customers c
+JOIN Sales_Representative sr ON c.Cust_Rep = sr.Rep_no;
+
+SELECT o.Order_no, o.amount, c.Company AS Customer_Name, c.Credit_Limit
+FROM Orders o
+JOIN Customers c ON o.cust = c.Cust_No;
+
+SELECT o.product, SUM(o.amount) AS Total_Sale_Amount
+FROM Orders o
+GROUP BY o.product
+HAVING SUM(o.amount) > 12000;
+
+SELECT o.product, c.Company AS Customer_Name, sr.Name AS Rep_Name
+FROM Orders o
+JOIN Customers c ON o.cust = c.Cust_No
+JOIN Sales_Representative sr ON c.Cust_Rep = sr.Rep_no
+WHERE o.product = 'Software';
+
+SELECT c.Company, c.Credit_Limit, SUM(o.Disc) AS Total_Discount
+FROM Orders o
+JOIN Customers c ON o.cust = c.Cust_No
+GROUP BY c.Company, c.Credit_Limit;
+
+SELECT sr1.Name AS Rep1_Name, sr2.Name AS Rep2_Name, sr1.Rep_office
+FROM Sales_Representative sr1
+JOIN Sales_Representative sr2 ON sr1.Rep_office = sr2.Rep_office
+WHERE sr1.Rep_no <> sr2.Rep_no;
+-- The condition sr1.Rep_no <> sr2.Rep_no in the query is used to avoid comparing the same sales representative with themselves

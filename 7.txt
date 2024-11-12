@@ -1,0 +1,51 @@
+use SITS
+
+db.createCollection("teachers")
+
+db.createCollection("students")
+
+db.teachers.insertMany([
+    { Tname: "Jyoti", dno: 1, dname: "DSA", experience: 5, salary: 45000, date_of_joining: new Date("2015-08-01") },
+    { Tname: "Digambar", dno: 1, dname: "DSA", experience: 3, salary: 40000, date_of_joining: new Date("2018-09-15") },
+    { Tname: "Mohan", dno: 2, dname: "DBMS", experience: 8, salary: 60000, date_of_joining: new Date("2013-06-10") },
+    { Tname: "Babli", dno: 2, dname: "DBMS", experience: 2, salary: 30000, date_of_joining: new Date("2020-01-20") },
+    { Tname: "Chandan", dno: 3, dname: "CPP", experience: 10, salary: 70000, date_of_joining: new Date("2011-03-25") }
+]);
+
+db.students.insertMany([
+    { Sname: "Samay", roll_no: 1, class: "TE" },
+    { Sname: "Jayesh", roll_no: 2, class: "SE" },
+    { Sname: "Mahesh", roll_no: 3, class: "TE" },
+    { Sname: "Akash", roll_no: 4, class: "FE" }
+]);
+
+db.teachers.aggregate([
+    { $group: { _id: "$dname", avgSalary: { $avg: "$salary" } } }
+]);
+
+db.teachers.aggregate([
+    { $group: { _id: "$dname", employeeCount: { $sum: 1 } } }
+]);
+
+db.teachers.aggregate([
+    { $group: { _id: "$dname", totalSalary: { $sum: "$salary" } } },
+    { $match: { totalSalary: { $gte: 50000 } } }
+]);
+
+db.teachers.aggregate([
+    { $group: { _id: "$dname", maxSalary: { $max: "$salary" } } }
+]);
+
+db.teachers.aggregate([
+    { $group: { _id: "$dname", minSalary: { $min: "$salary" } } }
+]);
+
+db.students.createIndex({ roll_no: 1 }, { unique: true });
+
+db.teachers.createIndex({ Tname: 1, dname: 1 });
+
+db.teachers.getIndexes();
+
+db.students.getIndexes();
+
+db.teachers.dropIndex({ Tname: 1, dname: 1 });

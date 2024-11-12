@@ -1,0 +1,68 @@
+CREATE DATABASE Stud_Details;
+
+USE Stud_Details;
+
+CREATE TABLE O_RollCall (
+    Student_Id INT NOT NULL,
+    Attendence_Date DATE,
+    Status VARCHAR(2),
+    PRIMARY KEY (Student_Id, Attendence_Date)
+);
+
+CREATE TABLE N_RollCall (
+    Student_Id INT NOT NULL,
+    Attendence_Date DATE,
+    Status VARCHAR(2),
+    PRIMARY KEY (Student_Id, Attendence_Date)
+);
+
+INSERT INTO O_RollCall (Student_Id, Attendence_Date, Status) VALUES 
+(1001, '2024-08-08', 'Ab'),
+(1002, '2024-08-08', 'Pr'),
+(1003, '2024-08-08', 'Pr'),
+(1004, '2024-08-08', 'Ab'),
+(1005, '2024-08-08', 'Ab'),
+(1006, '2024-08-08', 'Pr'),
+(1007, '2024-08-08', 'Pr'),
+(1008, '2024-08-08', 'Pr');
+
+INSERT INTO N_RollCall (Student_Id, Attendence_Date, Status) VALUES 
+(1005, '2024-08-08', 'Ab'),
+(1006, '2024-08-08', 'Pr'),
+(1007, '2024-08-08', 'Pr'),
+(1008, '2024-08-08', 'Pr'),
+(1009, '2024-08-08', 'Ab'),
+(1010, '2024-08-08', 'Pr');
+
+DELIMITER //
+CREATE PROCEDURE merge_rollcall()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_student_id INT;
+    DECLARE v_attendence_date DATE;
+    DECLARE v_status VARCHAR(2);
+    DECLARE cur_n_rollcall CURSOR FOR SELECT Student_Id, Attendence_Date, Status FROM N_RollCall;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+OPEN cur_n_rollcall;
+    read_loop: LOOP
+
+FETCH cur_n_rollcall INTO v_student_id, v_attendence_date, v_status;
+    IF done THEN
+        LEAVE read_loop;
+    END IF;
+
+    INSERT INTO O_RollCall (Student_Id, Attendence_Date, Status) VALUES (v_student_id, v_attendence_date, v_status)
+    ON DUPLICATE KEY UPDATE Status = VALUES(Status);
+    
+    END LOOP read_loop;
+
+    CLOSE cur_n_rollcall;
+
+END //
+
+DELIMITER ;
+
+CALL merge_rollcall();
+
+SELECT * FROM O_RollCall;

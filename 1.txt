@@ -1,0 +1,69 @@
+use STUDENTS
+
+db.createCollection("student")
+
+db.student.insertMany([
+    { "first_name": "Amit", "last_name": "Kumar", "age": 20, "gender": "male", "class": "TE A", "grd_point": 35, "city": "Mumbai", "course": "BSc" },
+    { "first_name": "Bhakti", "last_name": "Shah", "age": 22, "gender": "female", "class": "TE B", "grd_point": 28, "city": "Pune", "course": "BCA" },
+    { "first_name": "Rahul", "last_name": "Patil", "age": 19, "gender": "male", "class": "TE A", "grd_point": 31, "city": "Bangalore", "course": "BSc" },
+    { "first_name": "Sneha", "last_name": "Jadhav", "age": 18, "gender": "female", "class": "TE B", "grd_point": 29, "city": "Bangalore", "course": "BA" },
+    { "first_name": "Vikas", "last_name": "Rao", "age": 21, "gender": "male", "class": "TE C", "grd_point": 27, "city": "Delhi", "course": "BBA" },
+    { "first_name": "Kavita", "last_name": "Nair", "age": 20, "gender": "female", "class": "TE A", "grd_point": 32, "city": "Chennai", "course": "BCom" },
+    { "first_name": "Rajesh", "last_name": "Khan", "age": 22, "gender": "male", "class": "TE B", "grd_point": 29, "city": "Bangalore", "course": "BSc" },
+    { "first_name": "Suresh", "last_name": "Gupta", "age": 17, "gender": "male", "class": "TE A", "grd_point": 33, "city": "Bangalore", "course": "BCA" },
+    { "first_name": "Priya", "last_name": "Mehta", "age": 19, "gender": "female", "class": "TE A", "grd_point": 26, "city": "Mumbai", "course": "BA" },
+    { "first_name": "Anil", "last_name": "Jadhav", "age": 18, "gender": "male", "class": "TE B", "grd_point": 30, "city": "Pune", "course": "BSc" }
+])
+
+db.student.find({
+    $or: [
+        { "gender": "male" },
+        { "class": "TE A" },
+        { "grd_point": { $gte: 31 } }
+    ]
+})
+
+db.student.find({
+    "city": "Bangalore",
+    "age": { $lte: 19 }
+})
+
+
+db.student.updateOne(
+    { "first_name": "Bhakti" },
+    { $set: { "course": "MCA" } }
+)
+
+db.student.deleteOne({
+    "age": 18,
+    "gender": "male"
+})
+
+db.student.deleteOne({
+    "last_name": "Jadhav",
+    "class": "TE B"
+})
+
+db.student.find({
+    $nor: [
+        { "class": "TE A" },
+        { "class": "TE B" }
+    ],
+    "grd_point": { $lt: 30 }
+})
+
+var studentId = ObjectId("60e9b9b5f69dcd8b834c98a2");
+var student = db.student.findOne({ "_id": studentId });
+
+if (student) {
+    student.age = 21;
+    db.student.updateOne(
+        { "_id": studentId }, 
+        { $set: { "age": 21 } }
+    );
+} else {
+    print("Student not found");
+}
+
+db.student.find()
+    

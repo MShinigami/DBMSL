@@ -1,0 +1,38 @@
+use stud_map_reduce
+
+db.createCollection("student")
+
+db.student.insertMany([
+    { "Rollno": 1, "Name": "Aarav", "Class": "TE", "Div": "A", "Subject": { "TOC": 75, "DBMS": 65, "CNS": 80, "SPOS": 70 }, "Address": { "City": "Pune" } },
+    { "Rollno": 2, "Name": "Isha", "Class": "TE", "Div": "B", "Subject": { "TOC": 85, "DBMS": 55, "CNS": 78, "SPOS": 60 }, "Address": { "City": "Mumbai" } },
+    { "Rollno": 3, "Name": "Nikhil", "Class": "TE", "Div": "A", "Subject": { "TOC": 70, "DBMS": 60, "CNS": 82, "SPOS": 75 }, "Address": { "City": "Pune" } },
+    { "Rollno": 4, "Name": "Sara", "Class": "TE", "Div": "B", "Subject": { "TOC": 68, "DBMS": 50, "CNS": 75, "SPOS": 65 }, "Address": { "City": "Bangalore" } },
+    { "Rollno": 5, "Name": "Ravi", "Class": "TE", "Div": "B", "Subject": { "TOC": 80, "DBMS": 85, "CNS": 88, "SPOS": 82 }, "Address": { "City": "Pune" } },
+    { "Rollno": 6, "Name": "Megha", "Class": "TE", "Div": "A", "Subject": { "TOC": 90, "DBMS": 65, "CNS": 77, "SPOS": 68 }, "Address": { "City": "Mumbai" } }
+])
+
+var distinction = function() {
+    var category;
+    if (this.Subject.DBMS > 70) {
+        category = "Highscores";
+    } else if (this.Subject.DBMS > 40) {
+        category = "Average scores";
+    } else {
+        category = "Failed";
+    }
+    emit(category, 1);
+};
+
+var total = function(key, values) {
+    return Array.sum(values);
+};
+
+db.student.mapReduce(
+    distinction,
+    total,
+    {
+        out: "Categories"
+    }
+);
+
+db.Categories.find()
