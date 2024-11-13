@@ -45,12 +45,10 @@ SELECT ename
 FROM emp
 WHERE ename LIKE 'I%';
 
-SELECT *
-FROM emp
+SELECT * FROM emp
 WHERE hiredate < '1981-09-30';
 
-SELECT *
-FROM emp
+SELECT * FROM emp
 ORDER BY salary DESC;
 
 SELECT COUNT(*) AS num_employees, AVG(salary) AS avg_salary
@@ -71,8 +69,7 @@ FROM emp e
 JOIN dept d ON e.deptno = d.deptno
 GROUP BY d.deptname;
 
-SELECT e.*
-FROM emp e
+SELECT e.* FROM emp e
 JOIN dept d ON e.deptno = d.deptno
 WHERE d.deptname = 'Development';
 
